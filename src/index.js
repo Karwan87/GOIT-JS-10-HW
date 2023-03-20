@@ -15,13 +15,12 @@ const renderCountryList = countries => {
     .map(
       country => `
       <div>
-        <img src="${country.flags.svg}" alt="${country.name.official}" width="50" height="30">
-        <span>${country.name.official}</span>
+        <img src="${country.flags}" alt="${country.name}" width="50" height="30">
+        <span>${country.name}</span>
       </div>
     `
     )
     .join('');
-
   countryList.innerHTML = countriesHTML;
   countryInfo.innerHTML = '';
 };
@@ -31,10 +30,10 @@ const renderCountryInfo = country => {
 
   const countryHTML = `
     <div>
-      <img src="${country.flags.svg}" alt="${
-    country.name.official
+      <img src="${country.flags}" alt="${
+    country.name
   }" width="150" height="100">
-      <h2>${country.name.official}</h2>
+      <h2>${country.name}</h2>
       <p><strong>Capital:</strong> ${country.capital}</p>
       <p><strong>Population:</strong> ${country.population.toLocaleString()}</p>
       <p><strong>Languages:</strong> ${languages}</p>
