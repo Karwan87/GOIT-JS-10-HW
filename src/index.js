@@ -1,6 +1,7 @@
 import './css/styles.css';
 import { debounce } from 'lodash';
-import { fetchCountries } from './fetchCountries.js';
+import { fetchCountries } from './fetchCountries';
+import { fetchLanguagesName, fetchLanguagesCodes } from './helpers';
 import Notiflix from 'notiflix';
 
 const searchBox = document.getElementById('search-box');
@@ -27,22 +28,53 @@ const renderCountryList = countries => {
   countryInfo.innerHTML = '';
 };
 
-const renderCountryInfo = country => {
+const fetchLanguagesCodes = async countryName => {
+  const countries = await fetchCountries(countryName);
+  if (countries.length === 0) {
+    throw new Error('Country not found');
+  }
+  const languages = countries[0].languages;
+  const languageCodes = Object.keys(languages);
+  return languageCodes;
+};
+
+const renderCountryInfo = async country => {
+  const languageCodes = await fetchLanguagesCodes(country.name.common);
+  const languageNames = await fetchLanguagesName(languageCodes);
+
   const countryHTML = `
     <div>
       <img src="${country.flags.svg}" alt="${
     country.name.official
   }" width="150" height="100">
       <h2>${country.name.common}</h2>
-        <p><strong>Capital:</strong> ${country.capital}</p>
+      <p><strong>Capital:</strong> ${country.capital}</p>
       <p><strong>Population:</strong> ${country.population.toLocaleString()}</p>
-      <p><strong>Languages:</strong> ${country.languages}</p>
-    </div>
+      <p><strong>Languages:</strong> ${await fetchLanguagesName(
+        await fetchLanguagesCodes(country.name.common)
+      )}</p>
   `;
 
   countryInfo.innerHTML = countryHTML;
   countryList.innerHTML = '';
 };
+
+// const renderCountryInfo = country => {
+//   const countryHTML = `
+//     <div>
+//       <img src="${country.flags.svg}" alt="${
+//     country.name.official
+//   }" width="150" height="100">
+//       <h2>${country.name.common}</h2>
+//         <p><strong>Capital:</strong> ${country.capital}</p>
+//       <p><strong>Population:</strong> ${country.population.toLocaleString()}</p>
+//       <p><strong>Languages:</strong> ${country.languages}</p>
+//     </div>
+//   `;
+
+//   countryInfo.innerHTML = countryHTML;
+//   countryList.innerHTML = '';
+// };
 
 const handleSearch = debounce(async () => {
   const searchQuery = searchBox.value.trim();
